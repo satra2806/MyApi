@@ -1,105 +1,163 @@
-using Microsoft.AspNetCore.Mvc;
-using MyApi.Models;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+    using Microsoft.AspNetCore.Mvc;
+    using MyApi.Models;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
 
-namespace MyApi.Controllers
-{
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProjectsController : ControllerBase
+    namespace MyApi.Controllers
     {
-        private readonly AppDbContext _context;
-
-        public ProjectsController(AppDbContext context)
+        [ApiController]
+        [Route("api/originatedProject")]
+        public class ProjectsAndLocationController : ControllerBase
         {
-            _context = context;
-        }
+            private readonly AppDbContext _context;
 
-        // GET: api/Projects
-        [HttpGet]
-        public async Task<IActionResult> GetProjects()
-        {
-            var projects = await _context.Projects.ToListAsync();
-            return Ok(projects);
-        }
-
-        // GET: api/Projects/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetProject(int id)
-        {
-            var project = await _context.Projects.FindAsync(id);
-
-            if (project == null)
+            public ProjectsAndLocationController(AppDbContext context)
             {
-                return NotFound();
+                _context = context;
             }
 
-            return Ok(project);
-        }
+            // ----------- PROJECTS API ENDPOINTS -----------
 
-        // POST: api/Projects
-        [HttpPost]
-        public async Task<IActionResult> CreateProject([FromBody] Project project)
-        {
-            if (project == null)
+            // GET: api/originatedProject/projects
+            [HttpGet("projects")]
+            public async Task<IActionResult> GetProjects()
             {
-                return BadRequest();
+                var projects = await _context.Projects.ToListAsync();
+                return Ok(projects);
             }
 
-            _context.Projects.Add(project);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetProject), new { id = project.Id }, project);
-        }
-
-        // PUT: api/Projects/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProject(int id, [FromBody] Project project)
-        {
-            if (id != project.Id || project == null)
+            // GET: api/originatedProject/projects/5
+            [HttpGet("projects/{id}")]
+            public async Task<IActionResult> GetProject(int id)
             {
-                return BadRequest();
+                var project = await _context.Projects.FindAsync(id);
+
+                if (project == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(project);
             }
 
-            var existingProject = await _context.Projects.FindAsync(id);
-            if (existingProject == null)
+            // POST: api/originatedProject/projects
+            [HttpPost("projects")]
+            public async Task<IActionResult> CreateProject([FromBody] Project project)
             {
-                return NotFound();
+                if (project == null)
+                {
+                    return BadRequest();
+                }
+
+                _context.Projects.Add(project);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetProject), new { id = project.Id }, project);
             }
 
-            existingProject.ProcessType = project.ProcessType;
-            existingProject.ProjectName = project.ProjectName;
-            existingProject.Description = project.Description;
-            existingProject.ProblemStatement = project.ProblemStatement;
-            existingProject.ProposedSolution = project.ProposedSolution;
-            existingProject.Assumptions = project.Assumptions;
-            existingProject.Constraints = project.Constraints;
-            existingProject.Benefits = project.Benefits;
-            existingProject.ProjectCode = project.ProjectCode;
-            existingProject.OriginatorROM = project.OriginatorROM;
-
-            _context.Projects.Update(existingProject);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        // DELETE: api/Projects/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProject(int id)
-        {
-            var project = await _context.Projects.FindAsync(id);
-            if (project == null)
+            // PUT: api/originatedProject/projects/5
+            [HttpPut("projects/{id}")]
+            public async Task<IActionResult> UpdateProject(int id, [FromBody] Project project)
             {
-                return NotFound();
+                if (id != project.Id || project == null)
+                {
+                    return BadRequest();
+                }
+
+                var existingProject = await _context.Projects.FindAsync(id);
+                if (existingProject == null)
+                {
+                    return NotFound();
+                }
+
+                existingProject.ProcessType = project.ProcessType;
+                existingProject.ProjectName = project.ProjectName;
+                existingProject.Description = project.Description;
+                existingProject.ProblemStatement = project.ProblemStatement;
+                existingProject.ProposedSolution = project.ProposedSolution;
+                existingProject.Assumptions = project.Assumptions;
+                existingProject.Constraints = project.Constraints;
+                existingProject.Benefits = project.Benefits;
+                existingProject.ProjectCode = project.ProjectCode;
+                existingProject.OriginatorROM = project.OriginatorROM;
+
+                _context.Projects.Update(existingProject);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
 
-            _context.Projects.Remove(project);
-            await _context.SaveChangesAsync();
+            // DELETE: api/originatedProject/projects/5
+            [HttpDelete("projects/{id}")]
+            public async Task<IActionResult> DeleteProject(int id)
+            {
+                var project = await _context.Projects.FindAsync(id);
+                if (project == null)
+                {
+                    return NotFound();
+                }
 
-            return NoContent();
+                _context.Projects.Remove(project);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+
+            // ----------- LOCATION TABLE API ENDPOINTS -----------
+
+            // GET: api/originatedProject/locationTable
+            [HttpGet("locationTable")]
+            public async Task<IActionResult> GetLocationTable()
+            {
+                var locations = await _context.locationTbl.ToListAsync();
+                return Ok(locations);
+            }
+
+            // GET: api/originatedProject/locationTable/5
+            [HttpGet("locationTable/{id}")]
+            public async Task<IActionResult> GetLocationById(int id)
+            {
+                var location = await _context.locationTbl.FindAsync(id);
+
+                if (location == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(location);
+            }
+
+            // POST: api/originatedProject/locationTable
+            [HttpPost("locationTable")]
+            public async Task<IActionResult> CreateLocation([FromBody] Location location)
+            {
+                if (location == null)
+                {
+                    return BadRequest();
+                }
+
+                _context.locationTbl.Add(location);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetLocationById), new { id = location.Id }, location);
+            }
+
+
+            // DELETE: api/originatedProject/locationTable/5
+            [HttpDelete("locationTable/{id}")]
+            public async Task<IActionResult> DeleteLocation(int id)
+            {
+                var location = await _context.locationTbl.FindAsync(id);
+                if (location == null)
+                {
+                    return NotFound();
+                }
+
+                _context.locationTbl.Remove(location);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
         }
     }
-}
