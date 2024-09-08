@@ -8,5 +8,7 @@ namespace MyApi.Models
 
         public DbSet<Project> Projects { get; set; }
          public DbSet<Location> locationTbl { get; set; }
+         public DbSet<ProjectCordinatortbl> ProjectCordinatortbl { get; set; }
+        public DbSet<projectPlanningtbl> projectPlanningtbl { get; set; }
     }
 }
