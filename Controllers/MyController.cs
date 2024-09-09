@@ -44,12 +44,15 @@ namespace MyApi.Controllers
                 })
                 .ToListAsync();
 
-            // Combine both results
-            var combinedDropdowns = coordinatorDropdowns
-                .Union(planningDropdowns)
-                .ToList();
+            // Create a combined result with "projectCordinator" and "projectManager" keys
+            var combinedResult = new
+            {
+                projectCordinator = coordinatorDropdowns,
+                projectManager = planningDropdowns
+            };
 
-            return Ok(combinedDropdowns);
+            return Ok(combinedResult);
+
         }
 
         // ----------- PROJECTS API ENDPOINTS -----------
