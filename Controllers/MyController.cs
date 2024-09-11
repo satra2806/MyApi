@@ -40,7 +40,8 @@ namespace MyApi.Controllers
                 {
                     pp.Id,
                     pp.DropdownValues,
-                    pp.DropDownLabel
+                    pp.DropDownLabel,
+                    pp.dropDownNumber
                 })
                 .ToListAsync();
 
