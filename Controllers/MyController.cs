@@ -1,7 +1,6 @@
 using MyApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -53,7 +52,6 @@ namespace MyApi.Controllers
             };
 
             return Ok(combinedResult);
-
         }
 
         // ----------- PROJECTS API ENDPOINTS -----------
@@ -149,15 +147,15 @@ namespace MyApi.Controllers
         [HttpGet("locationTable")]
         public async Task<IActionResult> GetLocationTable()
         {
-            var locations = await _context.locationTbl.ToListAsync();
+            var locations = await _context.LocationTable.ToListAsync();
             return Ok(locations);
         }
 
-        // GET: api/originatedProject/locationTable/5
+        // GET: api/originatedProject/locationTable/{id}
         [HttpGet("locationTable/{id}")]
         public async Task<IActionResult> GetLocationById(int id)
         {
-            var location = await _context.locationTbl.FindAsync(id);
+            var location = await _context.LocationTable.FindAsync(id);
 
             if (location == null)
             {
@@ -168,34 +166,24 @@ namespace MyApi.Controllers
         }
 
         // POST: api/originatedProject/locationTable
-        [HttpPost("locationTable")]
-        public async Task<IActionResult> CreateLocation([FromBody] Location location)
+
+        // DELETE: api/originatedProject/locationTable/{id}
+
+        // ----------- NEW API TO GET LOCATIONS BY lookup_facility_loc_id -----------
+
+        // GET: api/originatedProject/locationTable/facility/{lookupFacilityLocId}
+        [HttpGet("locationTable/facility/{lookupFacilityLocId}")]
+        public async Task<IActionResult> GetLocationByFacilityLocId(int lookupFacilityLocId)
         {
-            if (location == null)
-            {
-                return BadRequest();
-            }
+            var locations = await _context.LocationTable
+                .ToListAsync();
 
-            _context.locationTbl.Add(location);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetLocationById), new { id = location.Id }, location);
-        }
-
-        // DELETE: api/originatedProject/locationTable/5
-        [HttpDelete("locationTable/{id}")]
-        public async Task<IActionResult> DeleteLocation(int id)
-        {
-            var location = await _context.locationTbl.FindAsync(id);
-            if (location == null)
+            if (locations == null || !locations.Any())
             {
                 return NotFound();
             }
 
-            _context.locationTbl.Remove(location);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return Ok(locations);
         }
     }
 }

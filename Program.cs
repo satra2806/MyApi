@@ -13,7 +13,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("https://my-api-eta-two.vercel.app/")
+        builder => builder.WithOrigins("https://my-api-eta-two.vercel.app/", "http://localhost:3000")
                           .AllowAnyHeader()
                           .AllowAnyMethod());
 });
