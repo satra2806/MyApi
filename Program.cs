@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MyApi.Models;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,9 @@ builder.Services.AddControllers();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("The connection string 'DefaultConnection' was not found.");
 
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseMySQL(connectionString));
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
@@ -17,8 +21,14 @@ builder.Services.AddCors(options =>
                           .AllowAnyHeader()
                           .AllowAnyMethod());
 });
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySQL(connectionString));
+
+// Register Redis connection
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    var configuration = builder.Configuration.GetValue<string>("RedisConnection") 
+                        ?? throw new InvalidOperationException("Redis connection string not found.");
+    return ConnectionMultiplexer.Connect(configuration);
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -31,6 +41,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseRouting();
 app.UseCors("AllowSpecificOrigin");
 app.UseHttpsRedirection();

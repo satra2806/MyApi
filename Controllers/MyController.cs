@@ -1,8 +1,8 @@
-using MyApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
+using MyApi.Models;
+using StackExchange.Redis;
+using System.Text.Json;
 
 namespace MyApi.Controllers
 {
@@ -11,19 +11,33 @@ namespace MyApi.Controllers
     public class ProjectsAndLocationController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IConnectionMultiplexer _redis;
 
-        public ProjectsAndLocationController(AppDbContext context)
+        public ProjectsAndLocationController(AppDbContext context, IConnectionMultiplexer redis)
         {
             _context = context;
+            _redis = redis;
         }
-
-        // ----------- NEW API FOR DROPDOWN VALUES FROM BOTH TABLES -----------
 
         // GET: api/originatedProject/dropdownValues
         [HttpGet("dropdownValues")]
         public async Task<IActionResult> GetDropdownValues()
         {
-            // Query the ProjectCoordinatorTbl
+            // Redis cache key
+            string cacheKey = "dropdownValues";
+
+            // Connect to Redis
+            var database = _redis.GetDatabase();
+
+            // Check if the data exists in the cache
+            var cachedData = await database.StringGetAsync(cacheKey);
+            if (!cachedData.IsNullOrEmpty)
+            {
+                // If cache hit, return the cached data
+                return Ok(JsonSerializer.Deserialize<object>(cachedData!));
+            }
+
+            // Cache miss: Query the ProjectCoordinatorTbl
             var coordinatorDropdowns = await _context.ProjectCordinatortbl
                 .Select(pc => new
                 {
@@ -51,10 +65,13 @@ namespace MyApi.Controllers
                 projectManager = planningDropdowns
             };
 
+            // Serialize the result and store it in Redis cache with an expiration time (e.g., 10 minutes)
+            await database.StringSetAsync(cacheKey, JsonSerializer.Serialize(combinedResult), TimeSpan.FromMinutes(10));
+
             return Ok(combinedResult);
         }
 
-        // ----------- PROJECTS API ENDPOINTS -----------
+        // Other endpoints for projects and location table...
 
         // GET: api/originatedProject/projects
         [HttpGet("projects")]
@@ -165,17 +182,12 @@ namespace MyApi.Controllers
             return Ok(location);
         }
 
-        // POST: api/originatedProject/locationTable
-
-        // DELETE: api/originatedProject/locationTable/{id}
-
-        // ----------- NEW API TO GET LOCATIONS BY lookup_facility_loc_id -----------
-
         // GET: api/originatedProject/locationTable/facility/{lookupFacilityLocId}
         [HttpGet("locationTable/facility/{lookupFacilityLocId}")]
         public async Task<IActionResult> GetLocationByFacilityLocId(int lookupFacilityLocId)
         {
             var locations = await _context.LocationTable
+                .Where(l => l.LookupFacilityLocId == lookupFacilityLocId)
                 .ToListAsync();
 
             if (locations == null || !locations.Any())

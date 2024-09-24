@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "5gbJ5we99f8=",
+  "dgSpecHash": "UsTYGjVVpIs=",
   "success": true,
   "projectFilePath": "/Users/sathishram/Library/Mobile Documents/com~apple~CloudDocs/New works/New Proj/MyApi/MyApi.csproj",
   "expectedPackageFiles": [
@@ -41,6 +41,8 @@
     "/Users/sathishram/.nuget/packages/mysql.entityframeworkcore/8.0.5/mysql.entityframeworkcore.8.0.5.nupkg.sha512",
     "/Users/sathishram/.nuget/packages/npgsql/8.0.3/npgsql.8.0.3.nupkg.sha512",
     "/Users/sathishram/.nuget/packages/npgsql.entityframeworkcore.postgresql/8.0.4/npgsql.entityframeworkcore.postgresql.8.0.4.nupkg.sha512",
+    "/Users/sathishram/.nuget/packages/pipelines.sockets.unofficial/2.2.8/pipelines.sockets.unofficial.2.2.8.nupkg.sha512",
+    "/Users/sathishram/.nuget/packages/stackexchange.redis/2.8.16/stackexchange.redis.2.8.16.nupkg.sha512",
     "/Users/sathishram/.nuget/packages/swashbuckle.aspnetcore/6.4.0/swashbuckle.aspnetcore.6.4.0.nupkg.sha512",
     "/Users/sathishram/.nuget/packages/swashbuckle.aspnetcore.swagger/6.4.0/swashbuckle.aspnetcore.swagger.6.4.0.nupkg.sha512",
     "/Users/sathishram/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.4.0/swashbuckle.aspnetcore.swaggergen.6.4.0.nupkg.sha512",
